@@ -3,6 +3,7 @@ environment:
   sdk: ">=3.9.2 <4.0.0"
 workspace:
   - apps/bluetooth_debugger
+  - apps/bracelet_app
   - apps/seat_cushion_debugger
   - apps/utl_amulet
   - apps/virus_detector_cart_controller

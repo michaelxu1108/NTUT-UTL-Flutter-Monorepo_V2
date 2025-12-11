@@ -1,0 +1,106 @@
+<html>
+<body>
+<pre>
+<h1>猩ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.36.0.0
+Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 liao9106@gmail.com, 1, LIC=EXJT4-F2QYY-LQ90Q-NST1L-U9XME-RVGH6
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.36.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         
+Dialog DLL:      
+Target DLL:      Segger\JL2CM3.dll V2.99.40.0
+Dialog DLL:      TCM.DLL V1.53.0.0
+ 
+<h2>Project:</h2>
+C:\Users\liao9\Downloads\交接\肌力測軟體設計\從機\nRF5_SDK_17.1.0_ddde560\examples\ble_peripheral\ICM20948\pca10056-HJ840\s140\arm5_no_packs-----2\ble_app_uart_pca10056_s140.uvprojx
+Project File Date:  11/25/2025
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'nrf52840_xxaa'
+compiling main.c...
+..\..\..\..\..\..\modules\nrfx\hal\icm20948.h(356): warning:  #1295-D: Deprecated declaration imu_GYRO_correction - give arg types
+  void imu_GYRO_correction();
+..\..\..\..\..\..\modules\nrfx\hal\icm20948.h(373): warning:  #1-D: last line of file ends without a newline
+  #endif // IMU_H_
+..\..\..\main.c(293): warning:  #940-D: missing return statement at end of non-void function "mlx_init" 
+  }
+..\..\..\main.c(310): warning:  #940-D: missing return statement at end of non-void function "mlx_read" 
+  }
+..\..\..\main.c(1381): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+    yaw =  atan2(2.0 * (SEq_1 * SEq_4 + SEq_2 * SEq_3), 1-2*( SEq_3* SEq_3+ SEq_4* SEq_4)) ;
+..\..\..\main.c(1382): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+    pitch = asin(2.0 * (SEq_1* SEq_3 - SEq_2 * SEq_4));
+..\..\..\main.c(1383): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+    roll   = atan2(2.0 * (SEq_1* SEq_2 + SEq_3 * SEq_4), 1- 2*( SEq_2* SEq_2+SEq_3*SEq_3));
+..\..\..\main.c(1386): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+    yaw_watch  = yaw * 180.0/3.14159265358979f;
+..\..\..\main.c(1394): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+    roll_watch = roll* 180.0/3.14159265358979f;
+..\..\..\main.c(1402): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+    pitch_watch=pitch* 180.0/3.14159265358979f;
+..\..\..\main.c(1533): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  			Temper[i] = ((T - 46244) / 45.2 )+ 25;		
+..\..\..\main.c(1545): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	Temper[16] = ((T - 46244) / 45.2 )+ 25;	
+..\..\..\main.c(1555): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  	Temper[15] = ((T - 46244) / 45.2 )+ 25;		
+..\..\..\main.c(1567): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  			Temper[i] = ((T - 46244) / 45.2 )+ 25;	
+..\..\..\main.c(1583): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  			Temper[mlx_addr] = ((T - 46244) / 45.2 )+ 25;			
+..\..\..\main.c(1785): warning:  #188-D: enumerated type mixed with another type
+      result = inv_icm20948_set_gyro_dlpf(st->chip_config->gyro_dlpf);
+..\..\..\main.c(1790): warning:  #188-D: enumerated type mixed with another type
+      result = inv_icm20948_set_accel_dlpf(st->chip_config->accel_dlpf);
+..\..\..\main.c(2138): warning:  #1-D: last line of file ends without a newline
+   */
+..\..\..\main.c(1046): warning:  #177-D: function "uart_init"  was declared but never referenced
+  static void uart_init(void)
+..\..\..\main.c: 19 warnings, 0 errors
+linking...
+Program Size: Code=35520 RO-data=4112 RW-data=824 ZI-data=13728  
+FromELF: creating hex file...
+".\_build\nrf52840_xxaa.axf" - 0 Error(s), 19 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.6.0.pack
+                ARM.CMSIS.5.6.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.3.0
+
+Package Vendor: NordicSemiconductor
+                http://developer.nordicsemi.com/nRF5_SDK/pieces/nRF_DeviceFamilyPack/NordicSemiconductor.nRF_DeviceFamilyPack.8.40.3.pack
+                NordicSemiconductor.nRF_DeviceFamilyPack.8.40.3
+                Nordic Semiconductor nRF ARM devices Device Family Pack with BSD license.
+   * Component: Startup Version: 8.40.3
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_nrf52840_xxaa
+  C:\Users\liao9\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include
+  C:\Users\liao9\AppData\Local\Arm\Packs\NordicSemiconductor\nRF_DeviceFamilyPack\8.40.3\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.3.0
+
+   * Component: NordicSemiconductor::Device:Startup:8.40.3
+      Include file:  Device\Include\system_nrf52840.h
+      Include file:  Device\Include\system_nrf.h
+      Source file:   Device\Source\arm\arm_startup_nrf52840.s
+      Source file:   Device\Source\system_nrf52.c
+Build Time Elapsed:  00:00:04
+</pre>
+</body>
+</html>

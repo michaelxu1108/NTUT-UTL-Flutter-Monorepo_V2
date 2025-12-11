@@ -1,0 +1,105 @@
+{
+  "@@locale": "en",
+  "appName": "UTL Amulet App",
+
+  "downloadFileFinishedNotification": "Download {format} file finished.",
+  "@downloadFileButtonText": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+
+  "connectBluetoothButtonText": "Connect",
+  "disconnectBluetoothButtonText": "Disconnect",
+
+  "tabBluetoothScanner": "BT Scan",
+  "tabDataList": "Data",
+  "tabControlPanel": "Control",
+
+  "dataRecording": "Data Recording",
+  "recording": "Recording...",
+  "idle": "Idle",
+  "stopAndExportCSV": "Stop & Export CSV",
+  "startRecording": "Start Recording",
+  "stopRecordingHint": "Tip: CSV will auto-export after stopping",
+
+  "bluetoothCommand": "BT Command",
+  "enterCommand": "Enter command...",
+  "sendCommand": "Send",
+  "pleaseEnterCommand": "Please enter command",
+  "commandSent": "Command sent: 0x{command}",
+  "@commandSent": {
+    "placeholders": {
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "sendFailed": "Send failed",
+  "errorOccurred": "Error: {error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastCommandSuccess": "Last: 0x{command} (OK)",
+  "@lastCommandSuccess": {
+    "placeholders": {
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "lastCommandFailed": "Last: 0x{command} (Failed)",
+  "@lastCommandFailed": {
+    "placeholders": {
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "commandDescription": "Commands",
+  "commandExample": "Example: 70D612D90003C5",
+  "commandBLEMode": "BLE Mode",
+  "commandSetParam": "Set Param",
+  "commandCalibrate": "Calibrate",
+  "commandMagnetometer": "Magnetometer",
+  "commandLowHeadMode": "Low Head Mode",
+  "commandBreathMode": "Breath Mode",
+  "commandBindBand": "Bind Band",
+  "commandUnbindBand": "Unbind Band",
+
+  "id": "id",
+  "deviceId": "device ID",
+  "time": "time",
+  "accX": "accX",
+  "accY": "accY",
+  "accZ": "accZ",
+  "accTotal": "accTotal",
+  "gyroX": "gyroX",
+  "gyroY": "gyroY",
+  "gyroZ": "gyroZ",
+  "gyroTotal": "gyroTotal",
+  "magX": "magX",
+  "magY": "magY",
+  "magZ": "magZ",
+  "magTotal": "magTotal",
+  "pitch": "pitch",
+  "roll": "roll",
+  "yaw": "yaw",
+  "gValue": "gValue",
+  "pressure": "altitude",
+  "temperature": "temperature",
+  "posture": "posture",
+  "beaconRssi": "beacon RSSI",
+  "adc": "adc",
+  "battery": "battery",
+  "area": "area",
+  "step": "step",
+  "direction": "direction",
+  "point": "point"
+}

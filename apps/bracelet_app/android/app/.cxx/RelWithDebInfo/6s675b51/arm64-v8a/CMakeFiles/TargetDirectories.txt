@@ -1,0 +1,2 @@
+D:/Projects/flutter_projects/utl_app/apps/utl_amulet/android/app/.cxx/RelWithDebInfo/6s675b51/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/Projects/flutter_projects/utl_app/apps/utl_amulet/android/app/.cxx/RelWithDebInfo/6s675b51/arm64-v8a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,41 @@
+name: bracelet_app
+description: "Bracelet Sensor Monitor App."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+
+  # External dependencies
+  awesome_dialog: ^3.1.0
+  equatable: ^2.0.7
+  flutter_blue_plus: ^2.0.2
+  flutter_ringtone_player: ^4.0.0+4
+  fluttertoast: ^8.2.10
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+  permission_handler: ^12.0.1
+  provider: ^6.1.5+1
+  shared_preferences: ^2.5.3
+  syncfusion_flutter_charts: ^31.2.2
+  syncfusion_flutter_xlsio: ^31.2.2
+  synchronized: ^3.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true

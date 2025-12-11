@@ -1,0 +1,106 @@
+{
+  "@@locale": "zh_TW",
+
+  "appName": "UTL 平安符 App",
+
+  "downloadFileFinishedNotification": "下載 {format} 完成。",
+  "@downloadFileButtonText": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+
+  "connectBluetoothButtonText": "連接",
+  "disconnectBluetoothButtonText": "斷開連接",
+
+  "tabBluetoothScanner": "藍牙掃描",
+  "tabDataList": "數據列表",
+  "tabControlPanel": "控制面板",
+
+  "dataRecording": "數據記錄",
+  "recording": "正在記錄數據...",
+  "idle": "閒置中",
+  "stopAndExportCSV": "停止並匯出 CSV",
+  "startRecording": "開始記錄數據",
+  "stopRecordingHint": "提示：停止記錄後將自動匯出 CSV 檔案",
+
+  "bluetoothCommand": "藍牙指令",
+  "enterCommand": "輸入指令...",
+  "sendCommand": "發送指令",
+  "pleaseEnterCommand": "請輸入指令",
+  "commandSent": "指令已發送: 0x{command}",
+  "@commandSent": {
+    "placeholders": {
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "sendFailed": "發送失敗",
+  "errorOccurred": "錯誤: {error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "lastCommandSuccess": "上次: 0x{command} (成功)",
+  "@lastCommandSuccess": {
+    "placeholders": {
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "lastCommandFailed": "上次: 0x{command} (失敗)",
+  "@lastCommandFailed": {
+    "placeholders": {
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "commandDescription": "指令說明",
+  "commandExample": "範例: 70D612D90003C5",
+  "commandBLEMode": "BLE 模式",
+  "commandSetParam": "設定參數",
+  "commandCalibrate": "校正",
+  "commandMagnetometer": "磁力計",
+  "commandLowHeadMode": "低頭模式",
+  "commandBreathMode": "呼吸模式",
+  "commandBindBand": "綁定手環",
+  "commandUnbindBand": "取消綁定",
+
+  "id": "id",
+  "deviceId": "設備 ID",
+  "time": "時間",
+  "accX": "加速度X",
+  "accY": "加速度Y",
+  "accZ": "加速度Z",
+  "accTotal": "加速度Total",
+  "gyroX": "陀螺儀X",
+  "gyroY": "陀螺儀Y",
+  "gyroZ": "陀螺儀Z",
+  "gyroTotal": "陀螺儀Total",
+  "magX": "磁場X",
+  "magY": "磁場Y",
+  "magZ": "磁場Z",
+  "magTotal": "磁場Total",
+  "pitch": "俯仰角",
+  "roll": "橫滾角",
+  "yaw": "偏航角",
+  "gValue": "重力值",
+  "pressure": "高度",
+  "temperature": "溫度",
+  "posture": "姿態",
+  "beaconRssi": "信標信號強度",
+  "adc": "模數轉換",
+  "battery": "電池",
+  "area": "區域",
+  "step": "步數",
+  "direction": "方向",
+  "point": "點位"
+}
