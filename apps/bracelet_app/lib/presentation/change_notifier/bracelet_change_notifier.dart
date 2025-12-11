@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../domain/entity/mlx_sensor_data.dart';
 import '../../infrastructure/source/bluetooth/bracelet_bluetooth_module.dart';
-import '../../infrastructure/source/bluetooth/mock_bracelet_bluetooth_module.dart';
 import '../../infrastructure/service/csv_export_service.dart';
 
 /// 手環 App 狀態管理
 class BraceletChangeNotifier extends ChangeNotifier {
-  final dynamic _bluetoothModule; // 可以是 BraceletBluetoothModule 或 MockBraceletBluetoothModule
+  final dynamic
+  _bluetoothModule; // 可以是 BraceletBluetoothModule 或 MockBraceletBluetoothModule
 
   /// 建構子 - 支援注入藍牙模組（真實或 Mock）
   BraceletChangeNotifier({dynamic bluetoothModule})
-      : _bluetoothModule = bluetoothModule ?? BraceletBluetoothModule();
+    : _bluetoothModule = bluetoothModule ?? BraceletBluetoothModule();
 
   // ==================== 狀態變數 ====================
 

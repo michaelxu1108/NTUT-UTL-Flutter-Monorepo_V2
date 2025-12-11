@@ -211,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Expanded(
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 4),
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -227,9 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 2),
-              Text('X:${x}', style: const TextStyle(fontSize: 10)),
-              Text('Y:${y}', style: const TextStyle(fontSize: 10)),
-              Text('Z:${z}', style: const TextStyle(fontSize: 10)),
+              Text('X:$x', style: const TextStyle(fontSize: 10)),
+              Text('Y:$y', style: const TextStyle(fontSize: 10)),
+              Text('Z:$z', style: const TextStyle(fontSize: 10)),
             ],
           ),
         ),
@@ -242,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Expanded(
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 4),
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(

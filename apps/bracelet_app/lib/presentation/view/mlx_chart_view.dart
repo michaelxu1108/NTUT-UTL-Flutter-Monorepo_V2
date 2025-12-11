@@ -36,7 +36,9 @@ class MlxChartView extends StatelessWidget {
               child: TabBar(
                 isScrollable: true,
                 labelColor: Theme.of(context).colorScheme.primary,
-                unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                unselectedLabelColor: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
                 indicatorColor: Theme.of(context).colorScheme.primary,
                 tabs: const [
                   Tab(text: '全部'),
@@ -52,10 +54,25 @@ class MlxChartView extends StatelessWidget {
               child: TabBarView(
                 children: [
                   _buildAllChart(displayData),
-                  _buildSingleMlxChart(displayData, 0, 'MLX0 (拇指)', Colors.blue),
+                  _buildSingleMlxChart(
+                    displayData,
+                    0,
+                    'MLX0 (拇指)',
+                    Colors.blue,
+                  ),
                   _buildSingleMlxChart(displayData, 1, 'MLX1 (食指)', Colors.red),
-                  _buildSingleMlxChart(displayData, 2, 'MLX2 (中指)', Colors.green),
-                  _buildSingleMlxChart(displayData, 3, 'MLX3 (無名指)', Colors.orange),
+                  _buildSingleMlxChart(
+                    displayData,
+                    2,
+                    'MLX2 (中指)',
+                    Colors.green,
+                  ),
+                  _buildSingleMlxChart(
+                    displayData,
+                    3,
+                    'MLX3 (無名指)',
+                    Colors.orange,
+                  ),
                 ],
               ),
             ),
@@ -75,10 +92,7 @@ class MlxChartView extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: SfCartesianChart(
         title: ChartTitle(text: '全部 MLX - X 軸數據'),
-        legend: Legend(
-          isVisible: true,
-          position: LegendPosition.bottom,
-        ),
+        legend: Legend(isVisible: true, position: LegendPosition.bottom),
         primaryXAxis: NumericAxis(
           title: AxisTitle(text: '資料點'),
           majorGridLines: const MajorGridLines(width: 0.5),
@@ -94,17 +108,42 @@ class MlxChartView extends StatelessWidget {
           zoomMode: ZoomMode.x,
         ),
         series: [
-          _createLineSeries(data, 'MLX0-X', (d) => d.mlx0X.toDouble(), Colors.blue),
-          _createLineSeries(data, 'MLX1-X', (d) => d.mlx1X.toDouble(), Colors.red),
-          _createLineSeries(data, 'MLX2-X', (d) => d.mlx2X.toDouble(), Colors.green),
-          _createLineSeries(data, 'MLX3-X', (d) => d.mlx3X.toDouble(), Colors.orange),
+          _createLineSeries(
+            data,
+            'MLX0-X',
+            (d) => d.mlx0X.toDouble(),
+            Colors.blue,
+          ),
+          _createLineSeries(
+            data,
+            'MLX1-X',
+            (d) => d.mlx1X.toDouble(),
+            Colors.red,
+          ),
+          _createLineSeries(
+            data,
+            'MLX2-X',
+            (d) => d.mlx2X.toDouble(),
+            Colors.green,
+          ),
+          _createLineSeries(
+            data,
+            'MLX3-X',
+            (d) => d.mlx3X.toDouble(),
+            Colors.orange,
+          ),
         ],
       ),
     );
   }
 
   /// 顯示單一 MLX 的 3 軸數據
-  Widget _buildSingleMlxChart(List<MlxSensorData> data, int mlxIndex, String title, Color color) {
+  Widget _buildSingleMlxChart(
+    List<MlxSensorData> data,
+    int mlxIndex,
+    String title,
+    Color color,
+  ) {
     if (data.isEmpty) {
       return const Center(child: Text('無資料'));
     }
@@ -114,29 +153,69 @@ class MlxChartView extends StatelessWidget {
       case 0:
         series = [
           _createLineSeries(data, 'X 軸', (d) => d.mlx0X.toDouble(), color),
-          _createLineSeries(data, 'Y 軸', (d) => d.mlx0Y.toDouble(), color.withOpacity(0.7)),
-          _createLineSeries(data, 'Z 軸', (d) => d.mlx0Z.toDouble(), color.withOpacity(0.4)),
+          _createLineSeries(
+            data,
+            'Y 軸',
+            (d) => d.mlx0Y.toDouble(),
+            color.withValues(alpha: 0.7),
+          ),
+          _createLineSeries(
+            data,
+            'Z 軸',
+            (d) => d.mlx0Z.toDouble(),
+            color.withValues(alpha: (0.4)),
+          ),
         ];
         break;
       case 1:
         series = [
           _createLineSeries(data, 'X 軸', (d) => d.mlx1X.toDouble(), color),
-          _createLineSeries(data, 'Y 軸', (d) => d.mlx1Y.toDouble(), color.withOpacity(0.7)),
-          _createLineSeries(data, 'Z 軸', (d) => d.mlx1Z.toDouble(), color.withOpacity(0.4)),
+          _createLineSeries(
+            data,
+            'Y 軸',
+            (d) => d.mlx1Y.toDouble(),
+            color.withValues(alpha: 0.7),
+          ),
+          _createLineSeries(
+            data,
+            'Z 軸',
+            (d) => d.mlx1Z.toDouble(),
+            color.withValues(alpha: (0.4)),
+          ),
         ];
         break;
       case 2:
         series = [
           _createLineSeries(data, 'X 軸', (d) => d.mlx2X.toDouble(), color),
-          _createLineSeries(data, 'Y 軸', (d) => d.mlx2Y.toDouble(), color.withOpacity(0.7)),
-          _createLineSeries(data, 'Z 軸', (d) => d.mlx2Z.toDouble(), color.withOpacity(0.4)),
+          _createLineSeries(
+            data,
+            'Y 軸',
+            (d) => d.mlx2Y.toDouble(),
+            color.withValues(alpha: 0.7),
+          ),
+          _createLineSeries(
+            data,
+            'Z 軸',
+            (d) => d.mlx2Z.toDouble(),
+            color.withValues(alpha: 0.4),
+          ),
         ];
         break;
       case 3:
         series = [
           _createLineSeries(data, 'X 軸', (d) => d.mlx3X.toDouble(), color),
-          _createLineSeries(data, 'Y 軸', (d) => d.mlx3Y.toDouble(), color.withOpacity(0.7)),
-          _createLineSeries(data, 'Z 軸', (d) => d.mlx3Z.toDouble(), color.withOpacity(0.4)),
+          _createLineSeries(
+            data,
+            'Y 軸',
+            (d) => d.mlx3Y.toDouble(),
+            color.withValues(alpha: 0.7),
+          ),
+          _createLineSeries(
+            data,
+            'Z 軸',
+            (d) => d.mlx3Z.toDouble(),
+            color.withValues(alpha: 0.4),
+          ),
         ];
         break;
       default:
@@ -147,10 +226,7 @@ class MlxChartView extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: SfCartesianChart(
         title: ChartTitle(text: title),
-        legend: Legend(
-          isVisible: true,
-          position: LegendPosition.bottom,
-        ),
+        legend: Legend(isVisible: true, position: LegendPosition.bottom),
         primaryXAxis: NumericAxis(
           title: AxisTitle(text: '資料點'),
           majorGridLines: const MajorGridLines(width: 0.5),
@@ -168,35 +244,6 @@ class MlxChartView extends StatelessWidget {
         series: series,
       ),
     );
-  }
-
-  /// 建立 12 條波形線
-  List<CartesianSeries> _createSeries(List<MlxSensorData> data) {
-    if (data.isEmpty) {
-      return [];
-    }
-
-    return [
-      // MLX0 (藍色系)
-      _createLineSeries(data, 'MLX0-X', (d) => d.mlx0X.toDouble(), Colors.blue),
-      _createLineSeries(data, 'MLX0-Y', (d) => d.mlx0Y.toDouble(), Colors.blue[300]!),
-      _createLineSeries(data, 'MLX0-Z', (d) => d.mlx0Z.toDouble(), Colors.blue[100]!),
-
-      // MLX1 (紅色系)
-      _createLineSeries(data, 'MLX1-X', (d) => d.mlx1X.toDouble(), Colors.red),
-      _createLineSeries(data, 'MLX1-Y', (d) => d.mlx1Y.toDouble(), Colors.red[300]!),
-      _createLineSeries(data, 'MLX1-Z', (d) => d.mlx1Z.toDouble(), Colors.red[100]!),
-
-      // MLX2 (綠色系)
-      _createLineSeries(data, 'MLX2-X', (d) => d.mlx2X.toDouble(), Colors.green),
-      _createLineSeries(data, 'MLX2-Y', (d) => d.mlx2Y.toDouble(), Colors.green[300]!),
-      _createLineSeries(data, 'MLX2-Z', (d) => d.mlx2Z.toDouble(), Colors.green[100]!),
-
-      // MLX3 (橘色系)
-      _createLineSeries(data, 'MLX3-X', (d) => d.mlx3X.toDouble(), Colors.orange),
-      _createLineSeries(data, 'MLX3-Y', (d) => d.mlx3Y.toDouble(), Colors.orange[300]!),
-      _createLineSeries(data, 'MLX3-Z', (d) => d.mlx3Z.toDouble(), Colors.orange[100]!),
-    ];
   }
 
   /// 建立單一折線圖
