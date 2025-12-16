@@ -2,6 +2,7 @@ name: bracelet_app
 description: "Bracelet Sensor Monitor App."
 publish_to: 'none'
 version: 1.0.0+1
+resolution: workspace
 
 environment:
   sdk: ^3.9.2

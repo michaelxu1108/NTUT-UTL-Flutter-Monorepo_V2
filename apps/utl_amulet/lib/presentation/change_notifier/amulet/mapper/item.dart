@@ -15,6 +15,8 @@ enum AmuletLineChartItem {
   pressure,
   temperature,
   posture,
+  beaconRssi,
+  point,
   adc,
   battery,
   area,

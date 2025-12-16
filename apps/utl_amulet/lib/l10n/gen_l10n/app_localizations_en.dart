@@ -97,10 +97,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commandSetParam => 'Set Param';
 
   @override
+  String get commandSetSitPosture => 'Set posture to Sit';
+
+  @override
+  String get commandSetStandPosture => 'Set posture to Stand';
+
+  @override
+  String get commandSetInitPosture => 'Set posture to Init';
+
+  @override
+  String get commandAccGyroCalibrate => 'Calibrate accelerometer & gyroscope';
+
+  @override
   String get commandCalibrate => 'Calibrate';
 
   @override
   String get commandMagnetometer => 'Magnetometer';
+
+  @override
+  String get commandMagnetometerCalibrate => 'Calibrate magnetometer';
 
   @override
   String get commandLowHeadMode => 'Low Head Mode';

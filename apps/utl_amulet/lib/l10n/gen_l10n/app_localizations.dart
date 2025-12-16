@@ -255,6 +255,30 @@ abstract class AppLocalizations {
   /// **'Set Param'**
   String get commandSetParam;
 
+  /// No description provided for @commandSetSitPosture.
+  ///
+  /// In en, this message translates to:
+  /// **'Set posture to Sit'**
+  String get commandSetSitPosture;
+
+  /// No description provided for @commandSetStandPosture.
+  ///
+  /// In en, this message translates to:
+  /// **'Set posture to Stand'**
+  String get commandSetStandPosture;
+
+  /// No description provided for @commandSetInitPosture.
+  ///
+  /// In en, this message translates to:
+  /// **'Set posture to Init'**
+  String get commandSetInitPosture;
+
+  /// No description provided for @commandAccGyroCalibrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibrate accelerometer & gyroscope'**
+  String get commandAccGyroCalibrate;
+
   /// No description provided for @commandCalibrate.
   ///
   /// In en, this message translates to:
@@ -266,6 +290,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Magnetometer'**
   String get commandMagnetometer;
+
+  /// No description provided for @commandMagnetometerCalibrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibrate magnetometer'**
+  String get commandMagnetometerCalibrate;
 
   /// No description provided for @commandLowHeadMode.
   ///

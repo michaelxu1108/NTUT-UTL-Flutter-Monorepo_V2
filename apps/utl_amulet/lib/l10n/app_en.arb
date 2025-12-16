@@ -36,9 +36,17 @@
   "pressure": "pressure",
   "temperature": "temperature",
   "posture": "posture",
+  "beaconRssi": "beacon RSSI",
+  "point": "point",
   "adc": "adc",
   "battery": "battery",
   "area": "area",
   "step": "step",
-  "direction": "direction"
+  "direction": "direction",
+
+  "commandSetSitPosture": "Set posture to Sit",
+  "commandSetStandPosture": "Set posture to Stand",
+  "commandSetInitPosture": "Set posture to Init",
+  "commandAccGyroCalibrate": "Calibrate accelerometer & gyroscope",
+  "commandMagnetometerCalibrate": "Calibrate magnetometer"
 }

@@ -33,6 +33,10 @@ String amuletLineChartItemToName({
       return appLocalizations.temperature;
     case AmuletLineChartItem.posture:
       return appLocalizations.posture;
+    case AmuletLineChartItem.beaconRssi:
+      return appLocalizations.beaconRssi;
+    case AmuletLineChartItem.point:
+      return appLocalizations.point;
     case AmuletLineChartItem.adc:
       return appLocalizations.adc;
     case AmuletLineChartItem.battery:

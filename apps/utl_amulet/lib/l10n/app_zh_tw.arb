@@ -37,9 +37,17 @@
   "pressure": "氣壓",
   "temperature": "溫度",
   "posture": "姿態",
+  "beaconRssi": "信號強度",
+  "point": "點位",
   "adc": "模數轉換",
   "battery": "電池",
   "area": "區域",
   "step": "步數",
-  "direction": "方向"
+  "direction": "方向",
+
+  "commandSetSitPosture": "姿態變更為坐姿",
+  "commandSetStandPosture": "姿態變更為站姿",
+  "commandSetInitPosture": "姿態變更為 Init",
+  "commandAccGyroCalibrate": "加速度陀螺儀校正",
+  "commandMagnetometerCalibrate": "磁力計校正"
 }

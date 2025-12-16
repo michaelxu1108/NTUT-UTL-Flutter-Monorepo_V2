@@ -17,14 +17,23 @@ import 'package:utl_amulet/init/resource/infrastructure/path_resource.dart';
 import 'package:utl_amulet/init/resource/service/service_resource.dart';
 
 class Initializer {
+  final dynamic bluetoothModule;
+
+  Initializer({
+    this.bluetoothModule,
+  });
+
   Future call() async {
-    try {
-      FlutterBluePlus.setLogLevel(LogLevel.none);
-    } catch (e) {
-      debugPrint('[INITIALIZER] Warning: Failed to set FlutterBluePlus log level: $e');
+    // 只在非 Mock 模式下設置 FlutterBluePlus
+    if (bluetoothModule == null) {
+      try {
+        FlutterBluePlus.setLogLevel(LogLevel.none);
+      } catch (e) {
+        debugPrint('[INITIALIZER] Warning: Failed to set FlutterBluePlus log level: $e');
+      }
     }
 
-    BluetoothResource.bluetoothModule = BluetoothModule();
+    BluetoothResource.bluetoothModule = bluetoothModule ?? BluetoothModule();
 
     PathResource.downloadPath = ((await getSystemDownloadDirectory()) ?? (await getApplicationDocumentsDirectory())).absolute.path;
     PathResource.hivePath = (await getApplicationDocumentsDirectory()).absolute.path;

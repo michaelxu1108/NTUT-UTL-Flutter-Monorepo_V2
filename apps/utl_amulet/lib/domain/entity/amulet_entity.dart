@@ -4,13 +4,13 @@ enum AmuletPostureType {
   stand,          // 2
   lieDown,        // 3
   lieDownRight,   // 4
-  fallDown,       // 5 (原本 7, 改為 5)
+  fallDown,       // 5
   getDown,        // 6
-  lieDownLeft,    // 7 (原本 5, 改為 7)
-  reserved,       // 8 (保留)
-  walk,           // 9 (原本 8, 改為 9)
-  tempUnstable,   // 10 (新增)
-  upright,        // 11 (新增)
+  lieDownLeft,    // 7
+  walk,           // 8
+  reserved,       // 9 (保留)
+  tempUnstable,   // 10
+  upright,        // 11
 }
 
 class AmuletEntity {

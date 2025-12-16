@@ -15,6 +15,8 @@ const Map<AmuletLineChartItem, Color> _amuletSeriesItemColors = {
   AmuletLineChartItem.pressure: Color(0xFFCDB4DB),  // 淡紫
   AmuletLineChartItem.temperature: Color(0xFFFF006E), // 粉紅
   AmuletLineChartItem.posture: Color(0xFF6A0572),   // 紫色
+  AmuletLineChartItem.beaconRssi: Color(0xFF06FFA5), // 螢光綠
+  AmuletLineChartItem.point: Color(0xFFFFD60A),     // 金黃
   AmuletLineChartItem.adc: Color(0xFF8338EC),       // 深紫
   AmuletLineChartItem.battery: Color(0xFF3A86FF),   // 天空藍
   AmuletLineChartItem.area: Color(0xFF80ED99),      // 淺綠

@@ -40,6 +40,10 @@ num amuletLineChartItemToData({
       return data.temperature;
     case AmuletLineChartItem.posture:
       return data.posture.index;
+    case AmuletLineChartItem.beaconRssi:
+      return data.beaconRssi;
+    case AmuletLineChartItem.point:
+      return data.point;
     case AmuletLineChartItem.adc:
       return data.adc;
     case AmuletLineChartItem.battery:

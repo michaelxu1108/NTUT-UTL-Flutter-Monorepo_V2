@@ -97,10 +97,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get commandSetParam => '设定参数';
 
   @override
+  String get commandSetSitPosture => '姿态变更为坐姿';
+
+  @override
+  String get commandSetStandPosture => '姿态变更为站姿';
+
+  @override
+  String get commandSetInitPosture => '姿态变更为 Init';
+
+  @override
+  String get commandAccGyroCalibrate => '加速度陀螺仪校正';
+
+  @override
   String get commandCalibrate => '校正';
 
   @override
   String get commandMagnetometer => '磁力计';
+
+  @override
+  String get commandMagnetometerCalibrate => '磁力计校正';
 
   @override
   String get commandLowHeadMode => '低头模式';
@@ -295,10 +310,25 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get commandSetParam => '設定參數';
 
   @override
+  String get commandSetSitPosture => '姿態變更為坐姿';
+
+  @override
+  String get commandSetStandPosture => '姿態變更為站姿';
+
+  @override
+  String get commandSetInitPosture => '姿態變更為 Init';
+
+  @override
+  String get commandAccGyroCalibrate => '加速度陀螺儀校正';
+
+  @override
   String get commandCalibrate => '校正';
 
   @override
   String get commandMagnetometer => '磁力計';
+
+  @override
+  String get commandMagnetometerCalibrate => '磁力計校正';
 
   @override
   String get commandLowHeadMode => '低頭模式';

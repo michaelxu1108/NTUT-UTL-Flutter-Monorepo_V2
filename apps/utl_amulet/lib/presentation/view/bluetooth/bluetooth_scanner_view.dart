@@ -10,12 +10,19 @@ class BluetoothScannerView extends StatefulWidget {
 
 class _BluetoothScannerViewState extends State<BluetoothScannerView> {
   List<fbp.ScanResult> _scanResults = [];
+  List<fbp.BluetoothDevice> _connectedDevices = [];
   bool _isScanning = false;
 
   @override
   void initState() {
     super.initState();
+    _loadConnectedDevices();
     _startScan();
+  }
+
+  void _loadConnectedDevices() {
+    // 獲取所有已連接的設備
+    _connectedDevices = fbp.FlutterBluePlus.connectedDevices;
   }
 
   Future<void> _startScan() async {
@@ -32,7 +39,10 @@ class _BluetoothScannerViewState extends State<BluetoothScannerView> {
       fbp.FlutterBluePlus.scanResults.listen((results) {
         if (mounted) {
           setState(() {
-            _scanResults = results;
+            // 過濾掉 Unknown Device（沒有設備名稱的裝置）
+            _scanResults = results.where((result) {
+              return result.device.platformName.isNotEmpty;
+            }).toList();
           });
         }
       });
@@ -91,23 +101,47 @@ class _BluetoothScannerViewState extends State<BluetoothScannerView> {
 
   @override
   Widget build(BuildContext context) {
+    // 合併掃描結果和已連接設備
+    final allDevices = <fbp.BluetoothDevice>[];
+    final deviceIds = <String>{};
+
+    // 先添加已連接的設備
+    for (final device in _connectedDevices) {
+      allDevices.add(device);
+      deviceIds.add(device.remoteId.str);
+    }
+
+    // 再添加掃描結果中的設備（避免重複）
+    for (final result in _scanResults) {
+      if (!deviceIds.contains(result.device.remoteId.str)) {
+        allDevices.add(result.device);
+        deviceIds.add(result.device.remoteId.str);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bluetooth Devices'),
         actions: [
           IconButton(
             icon: Icon(_isScanning ? Icons.stop : Icons.refresh),
-            onPressed: _isScanning ? _stopScan : _startScan,
+            onPressed: () {
+              if (_isScanning) {
+                _stopScan();
+              } else {
+                _loadConnectedDevices();
+                _startScan();
+              }
+            },
           ),
         ],
       ),
-      body: _isScanning && _scanResults.isEmpty
+      body: _isScanning && allDevices.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
-              itemCount: _scanResults.length,
+              itemCount: allDevices.length,
               itemBuilder: (context, index) {
-                final result = _scanResults[index];
-                final device = result.device;
+                final device = allDevices[index];
                 final deviceName = device.platformName.isEmpty
                     ? 'Unknown Device'
                     : device.platformName;
