@@ -34,7 +34,7 @@ class ControlPanelView extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // 連接狀態
-                _buildStatusCard(notifier),
+                _buildStatusCard(context, notifier),
                 const SizedBox(height: 16),
 
                 // 記錄控制
@@ -56,7 +56,7 @@ class ControlPanelView extends StatelessWidget {
   }
 
   /// 狀態卡片
-  Widget _buildStatusCard(BraceletChangeNotifier notifier) {
+  Widget _buildStatusCard(BuildContext context, BraceletChangeNotifier notifier) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -88,10 +88,41 @@ class ControlPanelView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            '資料筆數: ${notifier.dataCount}',
-            style: const TextStyle(fontSize: 14),
+          // 顯示資料庫總筆數（無限制）
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '已記錄: ${notifier.totalDataCount} 筆',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              const SizedBox(width: 4),
+              IconButton(
+                icon: const Icon(Icons.info_outline, size: 16),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () => _showDatabaseInfo(context, notifier),
+                tooltip: '資料庫資訊',
+              ),
+            ],
           ),
+          const SizedBox(height: 2),
+          // 顯示圖表顯示筆數（記憶體中，最多 3000）
+          Text(
+            '圖表顯示: ${notifier.dataCount} 筆',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+          ),
+          const SizedBox(height: 2),
+          // 顯示資料庫大小
+          if (notifier.totalDataCount > 0)
+            Text(
+              '資料庫: ${notifier.databaseSizeMB.toStringAsFixed(2)} MB',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
+            ),
           if (notifier.isRecording)
             const Padding(
               padding: EdgeInsets.only(top: 4),
@@ -131,7 +162,7 @@ class ControlPanelView extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: notifier.dataCount > 0 ? () => _confirmReset(context, notifier) : null,
+                onPressed: notifier.totalDataCount > 0 ? () => _confirmReset(context, notifier) : null,
                 icon: const Icon(Icons.refresh),
                 label: const Text('重置'),
                 style: ElevatedButton.styleFrom(
@@ -182,7 +213,7 @@ class ControlPanelView extends StatelessWidget {
   /// CSV 匯出按鈕
   Widget _buildExportButton(BuildContext context, BraceletChangeNotifier notifier) {
     return ElevatedButton.icon(
-      onPressed: notifier.dataCount > 0 && !notifier.isExporting
+      onPressed: notifier.totalDataCount > 0 && !notifier.isExporting
           ? () => _exportCsv(context, notifier)
           : null,
       icon: notifier.isExporting
@@ -205,7 +236,12 @@ class ControlPanelView extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('確認重置'),
-        content: Text('確定要清除所有資料嗎？\n目前有 ${notifier.dataCount} 筆資料。'),
+        content: Text(
+          '確定要清除所有資料嗎？\n\n'
+          '已記錄: ${notifier.totalDataCount} 筆\n'
+          '資料庫大小: ${notifier.databaseSizeMB.toStringAsFixed(2)} MB\n\n'
+          '此操作將清除記憶體和資料庫中的所有資料。',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -300,5 +336,94 @@ class ControlPanelView extends StatelessWidget {
         );
       }
     }
+  }
+
+  /// 顯示資料庫詳細資訊
+  void _showDatabaseInfo(BuildContext context, BraceletChangeNotifier notifier) {
+    final path = notifier.databasePath ?? '未初始化';
+    final totalCount = notifier.totalDataCount;
+    final memoryCount = notifier.dataCount;
+    final sizeMB = notifier.databaseSizeMB;
+
+    // 計算記錄時長（假設 50 Hz）
+    final durationSeconds = totalCount / 50;
+    final hours = (durationSeconds / 3600).floor();
+    final minutes = ((durationSeconds % 3600) / 60).floor();
+    final seconds = (durationSeconds % 60).floor();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.storage, color: Colors.blue),
+            SizedBox(width: 8),
+            Text('資料庫資訊'),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildInfoRow('📊 總筆數', '$totalCount 筆'),
+              _buildInfoRow('📈 圖表顯示', '$memoryCount 筆 (最近)'),
+              _buildInfoRow('💾 資料庫大小', '${sizeMB.toStringAsFixed(2)} MB'),
+              _buildInfoRow('⏱️ 記錄時長', '$hours 小時 $minutes 分 $seconds 秒'),
+              const Divider(height: 20),
+              const Text(
+                '📁 檔案位置：',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+              const SizedBox(height: 4),
+              SelectableText(
+                path,
+                style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '💡 提示：\n'
+                '• 資料庫儲存在應用程式私有目錄\n'
+                '• App 關閉後資料保留\n'
+                '• 支援 24 小時以上長時間記錄\n'
+                '• 匯出 CSV 會包含所有資料',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('關閉'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 建立資訊列
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'presentation/change_notifier/bracelet_change_notifier.dart';
 import 'presentation/screen/home_screen.dart';
 import 'infrastructure/source/bluetooth/mock_bracelet_bluetooth_module.dart';
+import 'infrastructure/repository/sensor_data_repository.dart';
 
 /// ============================================
 /// 模擬資料配置
@@ -25,12 +27,24 @@ const bool useMockData = true;
 
 /// ============================================
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  // 確保 Flutter binding 初始化
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 初始化 Hive
+  await Hive.initFlutter();
+
+  // 創建並初始化 Repository
+  final repository = SensorDataRepository();
+  await repository.init();
+
+  runApp(MyApp(repository: repository));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SensorDataRepository repository;
+
+  const MyApp({super.key, required this.repository});
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +65,9 @@ class MyApp extends StatelessWidget {
       debugPrint('📱 Running in BLUETOOTH MODE - Connecting to real bracelet');
     }
 
+    debugPrint('💾 Hive 資料庫已初始化 - 支援 24 小時長時間記錄');
+    debugPrint('💾 Hive database initialized - Supports 24+ hour recording');
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -58,15 +75,13 @@ class MyApp extends StatelessWidget {
             bluetoothModule: useMockData
                 ? MockBraceletBluetoothModule() // 模擬模組
                 : null, // null 會使用預設的 BraceletBluetoothModule
+            repository: repository, // 注入 repository
           ),
         ),
       ],
       child: MaterialApp(
         title: '手環感測器監控',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-        ),
+        theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
         home: const HomeScreen(),
         debugShowCheckedModeBanner: false,
       ),

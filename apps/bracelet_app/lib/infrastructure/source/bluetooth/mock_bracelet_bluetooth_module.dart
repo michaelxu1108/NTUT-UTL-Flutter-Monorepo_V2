@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../../domain/entity/mlx_sensor_data.dart';
+import 'bracelet_bluetooth_module.dart';
 
 /// ============================================
 /// Mock 藍牙模組 - 自動生成假資料
@@ -19,6 +20,8 @@ import '../../../domain/entity/mlx_sensor_data.dart';
 class MockBraceletBluetoothModule {
   final StreamController<MlxSensorData> _dataController =
       StreamController.broadcast();
+  final StreamController<ConnectionStatus> _connectionStatusController =
+      StreamController<ConnectionStatus>.broadcast();
 
   Timer? _timer;
   final Random _random = Random();
@@ -30,19 +33,47 @@ class MockBraceletBluetoothModule {
   /// 資料串流
   Stream<MlxSensorData> get dataStream => _dataController.stream;
 
+  /// 連接狀態訊息串流（供 UI 顯示）
+  Stream<ConnectionStatus> get connectionStatusStream =>
+      _connectionStatusController.stream;
+
+  /// 發送連接狀態訊息
+  void _sendStatus(String message, {bool isError = false, bool isComplete = false}) {
+    final status = ConnectionStatus(
+      message: message,
+      isError: isError,
+      isComplete: isComplete,
+    );
+    _connectionStatusController.add(status);
+    print('🔧 [Mock] $message');
+  }
+
   /// 模擬連接（自動開始生成資料）
   Future<bool> connect(BluetoothDevice device) async {
-    print('🔧 [Mock] 模擬連接到裝置: ${device.platformName}');
+    final deviceName = device.platformName.isEmpty ? 'Mock 裝置' : device.platformName;
 
-    // 模擬連接延遲
-    await Future.delayed(const Duration(milliseconds: 500));
+    _sendStatus('正在連接到 $deviceName... (模擬模式)');
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    _sendStatus('已連接到裝置 (模擬)');
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    _sendStatus('正在搜尋服務... (模擬)');
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    _sendStatus('找到手環服務 (模擬)');
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    _sendStatus('正在啟動資料串流... (模擬)');
 
     // 開始生成假資料（50 Hz = 每 20ms 一筆）
     _timer = Timer.periodic(const Duration(milliseconds: 20), (_) {
       _generateMockData();
     });
 
-    print('🔧 [Mock] 連接成功，開始生成資料（50 Hz）');
+    await Future.delayed(const Duration(milliseconds: 200));
+    _sendStatus('連接完成！手環已就緒 (模擬模式)', isComplete: true);
+
     return true;
   }
 
@@ -82,26 +113,29 @@ class MockBraceletBluetoothModule {
 
     // 模擬手指彎曲動作（正弦波 + 噪音）
     // 每個 MLX 代表一個手指關節的磁場變化
-    final finger0Angle = sin(time * 0.5) * 1000 + 32768; // 拇指
-    final finger1Angle = sin(time * 0.6 + 1.0) * 1200 + 32768; // 食指
-    final finger2Angle = sin(time * 0.7 + 2.0) * 1100 + 32768; // 中指
-    final finger3Angle = sin(time * 0.8 + 3.0) * 1000 + 32768; // 無名指
+    //
+    // 🎨 UI 測試模式：使用快速波形（週期約 2-3 秒）
+    // 讓波形在短時間內就能看到明顯起伏
+    final finger0Angle = sin(time * 2.0) * 2000 + 32768; // 拇指（週期 3.1 秒）
+    final finger1Angle = sin(time * 2.5 + 1.0) * 2500 + 32768; // 食指（週期 2.5 秒）
+    final finger2Angle = sin(time * 3.0 + 2.0) * 2200 + 32768; // 中指（週期 2.1 秒）
+    final finger3Angle = sin(time * 3.5 + 3.0) * 2000 + 32768; // 無名指（週期 1.8 秒）
 
     final mlx0X = _clampUint16(finger0Angle + _randomNoise(100));
-    final mlx0Y = _clampUint16(32768.0 + _randomNoise(200));
-    final mlx0Z = _clampUint16(32768.0 + _randomNoise(150));
+    final mlx0Y = _clampUint16(32768.0 + sin(time * 2.2) * 1800 + _randomNoise(200));
+    final mlx0Z = _clampUint16(32768.0 + sin(time * 2.8) * 1500 + _randomNoise(150));
 
     final mlx1X = _clampUint16(finger1Angle + _randomNoise(100));
-    final mlx1Y = _clampUint16(32768.0 + _randomNoise(200));
-    final mlx1Z = _clampUint16(32768.0 + _randomNoise(150));
+    final mlx1Y = _clampUint16(32768.0 + sin(time * 2.3) * 1900 + _randomNoise(200));
+    final mlx1Z = _clampUint16(32768.0 + sin(time * 2.9) * 1600 + _randomNoise(150));
 
     final mlx2X = _clampUint16(finger2Angle + _randomNoise(100));
-    final mlx2Y = _clampUint16(32768.0 + _randomNoise(200));
-    final mlx2Z = _clampUint16(32768.0 + _randomNoise(150));
+    final mlx2Y = _clampUint16(32768.0 + sin(time * 2.4) * 2000 + _randomNoise(200));
+    final mlx2Z = _clampUint16(32768.0 + sin(time * 3.0) * 1700 + _randomNoise(150));
 
     final mlx3X = _clampUint16(finger3Angle + _randomNoise(100));
-    final mlx3Y = _clampUint16(32768.0 + _randomNoise(200));
-    final mlx3Z = _clampUint16(32768.0 + _randomNoise(150));
+    final mlx3Y = _clampUint16(32768.0 + sin(time * 2.6) * 1800 + _randomNoise(200));
+    final mlx3Z = _clampUint16(32768.0 + sin(time * 3.2) * 1500 + _randomNoise(150));
 
     // 建立資料實體
     final data = MlxSensorData(
@@ -174,5 +208,6 @@ class MockBraceletBluetoothModule {
   void dispose() {
     _timer?.cancel();
     _dataController.close();
+    _connectionStatusController.close();
   }
 }
