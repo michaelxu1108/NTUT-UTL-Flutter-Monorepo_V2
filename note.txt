@@ -1,0 +1,2 @@
+1. cd 你的專案路徑
+2. flutter build apk
