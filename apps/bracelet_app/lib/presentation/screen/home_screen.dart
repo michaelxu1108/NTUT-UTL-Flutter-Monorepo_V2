@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:provider/provider.dart';
 import '../change_notifier/bracelet_change_notifier.dart';
-import '../view/mlx_chart_view.dart';
 import '../view/control_panel_view.dart';
+import '../view/sensor_selection_view.dart';
+import '../view/dynamic_chart_view.dart';
+import '../../domain/entity/sensor_axis.dart';
 import '../../main.dart' show useMockData;
 
 /// 主畫面
@@ -15,6 +17,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // 選中的感測器軸向
+  Set<SensorAxis> _selectedAxes = {};
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +30,40 @@ class _HomeScreenState extends State<HomeScreen> {
         _autoConnectMockDevice(context);
       });
     }
+
+    // 預設選擇一些軸向作為示範
+    _selectedAxes = {
+      SensorAxis.mlx0Z,
+      SensorAxis.mlx1Z,
+      SensorAxis.accX,
+      SensorAxis.accY,
+      SensorAxis.accZ,
+    };
+  }
+
+  /// 切換軸向選擇
+  void _toggleAxis(SensorAxis axis) {
+    setState(() {
+      if (_selectedAxes.contains(axis)) {
+        _selectedAxes.remove(axis);
+      } else {
+        _selectedAxes.add(axis);
+      }
+    });
+  }
+
+  /// 全選
+  void _selectAll() {
+    setState(() {
+      _selectedAxes = Set.from(SensorAxis.values);
+    });
+  }
+
+  /// 清空選擇
+  void _clearAll() {
+    setState(() {
+      _selectedAxes.clear();
+    });
   }
 
   /// 自動連接 Mock 裝置（啟動時執行）
@@ -109,26 +148,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// 橫版佈局（左右分割）
   Widget _buildLandscapeLayout(BraceletChangeNotifier notifier, BoxConstraints constraints) {
-    // 根據螢幕寬度動態調整控制面板寬度
-    final panelWidth = constraints.maxWidth > 1200 ? 400.0 : 320.0;
+    // 側邊欄寬度
+    final selectionWidth = constraints.maxWidth > 1200 ? 240.0 : 200.0;
+    // 控制面板寬度
+    final panelWidth = constraints.maxWidth > 1200 ? 280.0 : 240.0;
 
     return Row(
       children: [
-        // 左側：圖表和數值卡片
+        // 左側：感測器選擇側邊欄
+        SizedBox(
+          width: selectionWidth,
+          child: SensorSelectionView(
+            selectedAxes: _selectedAxes,
+            onToggle: _toggleAxis,
+            onSelectAll: _selectAll,
+            onClearAll: _clearAll,
+          ),
+        ),
+        // 中間：動態圖表
         Expanded(
-          child: Column(
-            children: [
-              // 數值卡片（簡潔顯示）
-              _buildDataCards(notifier, isCompact: true),
-              // 圖表
-              Expanded(
-                child: MlxChartView(
-                  dataList: notifier.dataList,
-                  title: 'MLX90393 即時波形',
-                  maxDataPoints: 100,
-                ),
-              ),
-            ],
+          child: DynamicChartView(
+            dataList: notifier.dataList,
+            selectedAxes: _selectedAxes,
+            maxDataPoints: 100,
           ),
         ),
         // 右側：控制面板
@@ -146,126 +188,109 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPortraitLayout(BraceletChangeNotifier notifier) {
     return Column(
       children: [
-        // 數值卡片
-        _buildDataCards(notifier, isCompact: false),
-        // 圖表
+        // 上方：感測器選擇（固定高度顯示）
+        Container(
+          height: 180,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            border: Border(
+              bottom: BorderSide(
+                color: Theme.of(context).dividerColor,
+                width: 1,
+              ),
+            ),
+          ),
+          child: Column(
+            children: [
+              // 標題列
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  children: [
+                    const Icon(Icons.checklist, size: 18),
+                    const SizedBox(width: 6),
+                    const Text('選擇感測器', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        '${_selectedAxes.length}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    // 全選/清空按鈕
+                    TextButton.icon(
+                      onPressed: _selectAll,
+                      icon: const Icon(Icons.select_all, size: 14),
+                      label: const Text('全選', style: TextStyle(fontSize: 11)),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    TextButton.icon(
+                      onPressed: _clearAll,
+                      icon: const Icon(Icons.clear_all, size: 14),
+                      label: const Text('清空', style: TextStyle(fontSize: 11)),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // 感測器選擇列表（緊湊模式）
+              Expanded(
+                child: SensorSelectionView(
+                  selectedAxes: _selectedAxes,
+                  onToggle: _toggleAxis,
+                  onSelectAll: _selectAll,
+                  onClearAll: _clearAll,
+                  showHeader: false,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // 中間：動態圖表
         Expanded(
-          flex: 3,
-          child: MlxChartView(
+          flex: 5,
+          child: DynamicChartView(
             dataList: notifier.dataList,
-            title: 'MLX90393 即時波形',
+            selectedAxes: _selectedAxes,
             maxDataPoints: 100,
           ),
         ),
-        // 控制面板
-        Expanded(
-          flex: 2,
+        // 下方：控制面板（緊湊版）
+        Container(
+          height: 140,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            border: Border(
+              top: BorderSide(
+                color: Theme.of(context).dividerColor,
+                width: 1,
+              ),
+            ),
+          ),
           child: const SingleChildScrollView(
             child: ControlPanelView(),
           ),
         ),
       ],
-    );
-  }
-
-  /// 數值卡片（顯示最新數據）
-  Widget _buildDataCards(BraceletChangeNotifier notifier, {required bool isCompact}) {
-    final latestData = notifier.latestData;
-
-    if (latestData == null) {
-      return const SizedBox.shrink();
-    }
-
-    if (isCompact) {
-      // 橫版：單行顯示
-      return Container(
-        height: 80,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Row(
-          children: [
-            _buildMiniDataCard('MLX0', latestData.mlx0X, latestData.mlx0Y, latestData.mlx0Z, Colors.blue),
-            _buildMiniDataCard('MLX1', latestData.mlx1X, latestData.mlx1Y, latestData.mlx1Z, Colors.red),
-            _buildMiniDataCard('MLX2', latestData.mlx2X, latestData.mlx2Y, latestData.mlx2Z, Colors.green),
-            _buildMiniDataCard('MLX3', latestData.mlx3X, latestData.mlx3Y, latestData.mlx3Z, Colors.orange),
-          ],
-        ),
-      );
-    } else {
-      // 垂直版：網格顯示
-      return Container(
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          children: [
-            _buildDataCard('MLX0', latestData.mlx0X, latestData.mlx0Y, latestData.mlx0Z, Colors.blue),
-            _buildDataCard('MLX1', latestData.mlx1X, latestData.mlx1Y, latestData.mlx1Z, Colors.red),
-            _buildDataCard('MLX2', latestData.mlx2X, latestData.mlx2Y, latestData.mlx2Z, Colors.green),
-            _buildDataCard('MLX3', latestData.mlx3X, latestData.mlx3Y, latestData.mlx3Z, Colors.orange),
-          ],
-        ),
-      );
-    }
-  }
-
-  /// 迷你數據卡片（橫版用）
-  Widget _buildMiniDataCard(String title, int x, int y, int z, Color color) {
-    return Expanded(
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        color: color.withValues(alpha: 0.1),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text('X:$x', style: const TextStyle(fontSize: 10)),
-              Text('Y:$y', style: const TextStyle(fontSize: 10)),
-              Text('Z:$z', style: const TextStyle(fontSize: 10)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// 數據卡片（垂直版用）
-  Widget _buildDataCard(String title, int x, int y, int z, Color color) {
-    return Expanded(
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        color: color.withValues(alpha: 0.1),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text('X: $x', style: const TextStyle(fontSize: 13)),
-              const SizedBox(height: 4),
-              Text('Y: $y', style: const TextStyle(fontSize: 13)),
-              const SizedBox(height: 4),
-              Text('Z: $z', style: const TextStyle(fontSize: 13)),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -479,40 +504,155 @@ class _DeviceScannerDialogState extends State<DeviceScannerDialog> {
   void _connectToDevice(BuildContext context, BluetoothDevice device) async {
     Navigator.pop(context); // 關閉對話框
 
-    // 顯示連接中
+    // 顯示連接狀態對話框
+    final notifier = Provider.of<BraceletChangeNotifier>(context, listen: false);
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: Card(
-          child: Padding(
-            padding: EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('連接中...'),
-              ],
-            ),
+      builder: (context) => ConnectionStatusDialog(
+        bluetoothModule: notifier,
+        device: device,
+      ),
+    );
+  }
+}
+
+/// 連接狀態對話框（顯示連接過程的詳細步驟）
+class ConnectionStatusDialog extends StatefulWidget {
+  final BraceletChangeNotifier bluetoothModule;
+  final BluetoothDevice device;
+
+  const ConnectionStatusDialog({
+    super.key,
+    required this.bluetoothModule,
+    required this.device,
+  });
+
+  @override
+  State<ConnectionStatusDialog> createState() => _ConnectionStatusDialogState();
+}
+
+class _ConnectionStatusDialogState extends State<ConnectionStatusDialog> {
+  String _statusMessage = '準備連接...';
+  bool _isError = false;
+  bool _isComplete = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startConnection();
+  }
+
+  void _startConnection() async {
+    // 監聽連接狀態
+    widget.bluetoothModule.connectionStatusStream.listen((status) {
+      if (mounted) {
+        setState(() {
+          _statusMessage = status.message;
+          _isError = status.isError;
+          _isComplete = status.isComplete;
+        });
+
+        // 如果連接完成或發生錯誤，延遲後關閉對話框
+        if (status.isComplete || status.isError) {
+          Future.delayed(const Duration(seconds: 2), () {
+            if (mounted) {
+              Navigator.pop(context);
+
+              // 如果是錯誤，顯示詳細錯誤訊息
+              if (status.isError) {
+                _showErrorDialog(status.message);
+              }
+            }
+          });
+        }
+      }
+    });
+
+    // 開始連接
+    await widget.bluetoothModule.connectToDevice(widget.device);
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.error_outline, color: Colors.red[700]),
+            const SizedBox(width: 12),
+            const Text('連接失敗'),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            errorMessage,
+            style: const TextStyle(fontSize: 14),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('確定'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Card(
+        margin: const EdgeInsets.all(24.0),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 圖示
+              if (_isError)
+                Icon(Icons.error_outline, size: 60, color: Colors.red[700])
+              else if (_isComplete)
+                Icon(Icons.check_circle_outline, size: 60, color: Colors.green[700])
+              else
+                const SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: CircularProgressIndicator(strokeWidth: 3),
+                ),
+              const SizedBox(height: 24),
+
+              // 標題
+              Text(
+                _isError ? '連接失敗' : (_isComplete ? '連接成功！' : '連接中'),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: _isError
+                      ? Colors.red[700]
+                      : (_isComplete ? Colors.green[700] : null),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // 狀態訊息
+              Container(
+                constraints: const BoxConstraints(maxWidth: 300),
+                child: Text(
+                  _statusMessage,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
-
-    // 連接裝置
-    final notifier = Provider.of<BraceletChangeNotifier>(context, listen: false);
-    final success = await notifier.connectToDevice(device);
-
-    if (context.mounted) {
-      Navigator.pop(context); // 關閉連接中對話框
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(success ? '連接成功！' : '連接失敗'),
-          backgroundColor: success ? Colors.green : Colors.red,
-        ),
-      );
-    }
   }
 }
