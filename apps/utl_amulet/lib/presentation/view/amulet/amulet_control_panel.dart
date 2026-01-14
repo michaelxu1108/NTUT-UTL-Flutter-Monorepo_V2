@@ -3,6 +3,8 @@ import 'package:utl_amulet/l10n/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:utl_amulet/domain/repository/amulet_repository.dart';
+import 'package:utl_amulet/domain/entity/recording_status.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 import 'package:utl_amulet/presentation/theme/theme_data.dart';
 
@@ -36,40 +38,85 @@ class AmuletControlPanel extends StatelessWidget {
 
   Widget _buildDataRecordingSection(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context)!;
-    final isSaving = context.select<AmuletFeaturesChangeNotifier, bool>((f) => f.isSaving);
+    final recordingStatus = context.select<AmuletFeaturesChangeNotifier, RecordingStatus>((f) => f.recordingStatus);
     final features = context.read<AmuletFeaturesChangeNotifier>();
     final fileHandler = context.read<FileHandler>();
     final repository = context.read<AmuletRepository>();
     final lineChartManager = context.read<AmuletLineChartManagerChangeNotifier>();
 
-    VoidCallback? onPressed = (isSaving)
-      ? () async {
+    VoidCallback? onPressed;
+
+    // 根據狀態決定按鈕行為
+    if (recordingStatus == RecordingStatus.recording) {
+      // 錄製中 - 可以停止並匯出
+      onPressed = () async {
         features.toggleIsSaving();
         lineChartManager.clear();
+
+        // 設定為「製作 CSV 中」狀態
+        features.setProcessingCsv();
+
         await fileHandler.downloadAmuletEntitiesFile(
           fetchEntitiesStream: repository.fetchEntities(),
           appLocalizations: appLocalizations,
         );
         await repository.clear();
-        await Fluttertoast.showToast(
-          msg: appLocalizations.downloadFileFinishedNotification('CSV'),
-        );
-      }
-      : features.toggleIsSaving;
+
+        // 設定為「下載完成」狀態
+        features.setCompleted();
+
+        // 顯示完成對話框
+        if (context.mounted) {
+          _showCompletionDialog(context, appLocalizations);
+        }
+      };
+    } else if (recordingStatus == RecordingStatus.idle || recordingStatus == RecordingStatus.completed) {
+      // 閒置或已完成 - 可以開始新的錄製
+      onPressed = () {
+        if (recordingStatus == RecordingStatus.completed) {
+          features.reset();
+        }
+        features.toggleIsSaving();
+      };
+    } else {
+      // 處理中 - 禁用按鈕
+      onPressed = null;
+    }
 
     final themeData = Theme.of(context);
-    final color = (isSaving)
-        ? themeData.clearEnabledColor
-        : themeData.savingEnabledColor;
-    final iconData = (isSaving)
-        ? Icons.stop
-        : Icons.play_arrow;
-    final statusText = (isSaving)
-        ? appLocalizations.recording
-        : appLocalizations.idle;
-    final buttonText = (isSaving)
-        ? appLocalizations.stopAndExportCSV
-        : appLocalizations.startRecording;
+
+    // 根據狀態設定顏色和圖示
+    Color color;
+    IconData iconData;
+    String statusText;
+    String buttonText;
+
+    switch (recordingStatus) {
+      case RecordingStatus.recording:
+        color = themeData.clearEnabledColor;
+        iconData = Icons.stop;
+        statusText = appLocalizations.recording;
+        buttonText = appLocalizations.stopAndExportCSV;
+        break;
+      case RecordingStatus.processingCsv:
+        color = Colors.orange;
+        iconData = Icons.hourglass_empty;
+        statusText = '製作 CSV 中';
+        buttonText = '處理中...';
+        break;
+      case RecordingStatus.completed:
+        color = Colors.blue;
+        iconData = Icons.check_circle;
+        statusText = '下載完成';
+        buttonText = appLocalizations.startRecording;
+        break;
+      case RecordingStatus.idle:
+        color = themeData.savingEnabledColor;
+        iconData = Icons.play_arrow;
+        statusText = appLocalizations.idle;
+        buttonText = appLocalizations.startRecording;
+        break;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,20 +135,30 @@ class AmuletControlPanel extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: isSaving ? Colors.green.shade50 : Colors.grey.shade100,
+            color: _getStatusBackgroundColor(recordingStatus),
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
-              color: isSaving ? Colors.green : Colors.grey.shade300,
+              color: _getStatusBorderColor(recordingStatus),
               width: 1.5,
             ),
           ),
           child: Row(
             children: [
-              Icon(
-                isSaving ? Icons.fiber_manual_record : Icons.fiber_manual_record_outlined,
-                color: color,
-                size: 12,
-              ),
+              if (recordingStatus == RecordingStatus.processingCsv)
+                SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(color),
+                  ),
+                )
+              else
+                Icon(
+                  _getStatusIcon(recordingStatus),
+                  color: color,
+                  size: 12,
+                ),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -109,7 +166,7 @@ class AmuletControlPanel extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: isSaving ? Colors.green.shade700 : Colors.grey.shade600,
+                    color: _getStatusTextColor(recordingStatus),
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -135,7 +192,7 @@ class AmuletControlPanel extends StatelessWidget {
             ),
           ),
         ),
-        if (isSaving) ...[
+        if (recordingStatus == RecordingStatus.recording) ...[
           const SizedBox(height: 6),
           Text(
             appLocalizations.stopRecordingHint,
@@ -144,8 +201,86 @@ class AmuletControlPanel extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ],
+        if (recordingStatus == RecordingStatus.completed) ...[
+          const SizedBox(height: 6),
+          Text(
+            '✅ CSV 檔案已成功儲存！點擊開始按鈕進行下一次錄製',
+            style: const TextStyle(fontSize: 10, color: Colors.blue),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ],
     );
+  }
+
+  Color _getStatusBackgroundColor(RecordingStatus status) {
+    switch (status) {
+      case RecordingStatus.recording:
+        return Colors.green.shade50;
+      case RecordingStatus.processingCsv:
+        return Colors.orange.shade50;
+      case RecordingStatus.completed:
+        return Colors.blue.shade50;
+      case RecordingStatus.idle:
+        return Colors.grey.shade100;
+    }
+  }
+
+  Color _getStatusBorderColor(RecordingStatus status) {
+    switch (status) {
+      case RecordingStatus.recording:
+        return Colors.green;
+      case RecordingStatus.processingCsv:
+        return Colors.orange;
+      case RecordingStatus.completed:
+        return Colors.blue;
+      case RecordingStatus.idle:
+        return Colors.grey.shade300;
+    }
+  }
+
+  Color _getStatusTextColor(RecordingStatus status) {
+    switch (status) {
+      case RecordingStatus.recording:
+        return Colors.green.shade700;
+      case RecordingStatus.processingCsv:
+        return Colors.orange.shade700;
+      case RecordingStatus.completed:
+        return Colors.blue.shade700;
+      case RecordingStatus.idle:
+        return Colors.grey.shade600;
+    }
+  }
+
+  IconData _getStatusIcon(RecordingStatus status) {
+    switch (status) {
+      case RecordingStatus.recording:
+        return Icons.fiber_manual_record;
+      case RecordingStatus.processingCsv:
+        return Icons.hourglass_empty;
+      case RecordingStatus.completed:
+        return Icons.check_circle;
+      case RecordingStatus.idle:
+        return Icons.fiber_manual_record_outlined;
+    }
+  }
+
+  void _showCompletionDialog(BuildContext context, AppLocalizations appLocalizations) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.scale,
+      title: '下載 CSV 完成',
+      desc: 'CSV 檔案已成功儲存到您的裝置中！\n\n您可以繼續進行下一次錄製。',
+      btnOkText: '確定',
+      btnOkOnPress: () {
+        // 對話框關閉後不需要做任何事
+      },
+      dismissOnTouchOutside: true,
+      dismissOnBackKeyPress: true,
+      btnOkColor: Colors.green,
+    ).show();
   }
 }
 

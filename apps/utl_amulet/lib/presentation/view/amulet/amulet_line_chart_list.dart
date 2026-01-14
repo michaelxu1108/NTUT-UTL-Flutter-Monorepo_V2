@@ -12,7 +12,7 @@ class AmuletLineChartList extends StatelessWidget {
   Iterable<AmuletLineChartItem> _getItems() sync* {
     for(var item in AmuletLineChartItem.values) {
       switch(item) {
-        case AmuletLineChartItem.temperature:
+        // temperature 已移除，現在會顯示溫度圖表
         case AmuletLineChartItem.adc:
         case AmuletLineChartItem.battery:
         case AmuletLineChartItem.step:
